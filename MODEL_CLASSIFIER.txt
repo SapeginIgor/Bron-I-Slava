@@ -1,0 +1,24 @@
+in Hotel_Estimination:
+
+def Model_Classifier(feedbacks_list):
+    reviews = []
+    ratings = []
+    for i in range(len(feedbacks_list)):
+        reviews.append(feedbacks_list[i][1] + " " + feedbacks_list[i][2])
+        ratings.append(feedbacks_list[i][0])
+
+    for i in range(len(reviews)):
+        reviews[i] = Preprocess_Text(reviews[i])
+    for i in reviews:
+        if i == [" "]:
+            reviews.remove(i)
+    cv = CountVectorizer(max_features=5000)
+    reviews = cv.fit_transform(reviews).toarray()
+    print(len(reviews))
+    X_train, X_test, Y_train, Y_test = train_test_split(reviews, ratings, test_size=0.25)
+    model = RandomForestClassifier(n_estimators=1000, criterion='entropy')
+
+    model.fit(X_train, Y_train)
+    PRED = model.predict(X_test)
+    CM = confusion_matrix(Y_test, PRED)
+    return PRED, CM
